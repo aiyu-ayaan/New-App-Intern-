@@ -1,10 +1,12 @@
 package com.atech.newapp.ui.main_activity
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.WindowManager
 import android.viewbinding.library.activity.viewBinding
+import android.widget.Toast
+import androidx.annotation.AttrRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -13,9 +15,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.atech.newapp.R
 import com.atech.newapp.databinding.ActivityMainBinding
-import com.atech.newapp.ui.utils.currentNavigationFragment
-import com.google.android.material.transition.MaterialSharedAxis
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -33,39 +35,49 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
 
             navController = navHostFragment.findNavController()
-            bottomNavigation.setupWithNavController(navController)
             appBarConfiguration = AppBarConfiguration(
                 setOf(
                     R.id.homeFragment,
-                    R.id.searchFragment,
                 )
             )
 
             collapsingToolbar.setupWithNavController(toolbar, navController, appBarConfiguration)
             setupActionBarWithNavController(navController, appBarConfiguration)
+            appbarLayout.addOnOffsetChangedListener { _, verticalOffset ->
+                if (abs(verticalOffset) - appbarLayout.totalScrollRange == 0) // collapsed
+                    changeStatusBarToolbarColor(R.attr.bottomBar)
+                else
+                    changeStatusBarToolbarColor(android.viewbinding.library.R.attr.colorSurface)
+
+            }
         }
-        onDestinationChange()
     }
 
-    private fun onDestinationChange() {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            getCurrentFragment()?.apply {
-                exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, /* forward= */ true)
-                reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, /* forward= */ false)
-            }
-            when (destination.id) {
-                else ->
-                    binding.bottomLayout.isVisible = true
+    private fun changeStatusBarToolbarColor(@AttrRes colorCode: Int) =
+        this.apply {
+            try {
+                window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                window?.statusBarColor = MaterialColors.getColor(
+                    this,
+                    colorCode,
+                    Color.WHITE
+                )
+                binding.toolbar.setBackgroundColor(
+                    MaterialColors.getColor(
+                        this,
+                        colorCode,
+                        Color.WHITE
+                    )
+                )
+            } catch (e: Exception) {
+                Toast.makeText(this, "${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-    }
+
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
-
-    private fun getCurrentFragment(): Fragment? =
-        supportFragmentManager.currentNavigationFragment
 
 
 }
