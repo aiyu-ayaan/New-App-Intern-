@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">New App</string>
+    <string name="app_name">News</string>
+    <string name="home">Home</string>
+    <string name="share">Share</string>
+    <string name="favorite">Favorite</string>
+    <string name="search">Search</string>
+    <string name="not_loaded">Result could not be loaded</string>
+    <string name="retry">Retry</string>
+    <string name="searchForNews">Search For News</string>
+    <string name="image_news">Image Title</string>
+    <string name="blank">" "</string>
+    <string name="delete">Delete</string>
+    <string name="delete_all">Delete All</string>
+    <string name="author_with_date">%s . %s</string>
 </resources>
