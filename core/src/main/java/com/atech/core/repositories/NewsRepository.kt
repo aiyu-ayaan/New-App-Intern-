@@ -21,13 +21,4 @@ class NewsRepository @Inject constructor(
             pagingSourceFactory = { NewsTopHeadingPagingSource(countryCode, api) }
         ).liveData
 
-    fun getSearchResult(query: String) =
-        Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                maxSize = 100,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { NewsSearchPagingSource(query, api) }
-        ).liveData
 }
